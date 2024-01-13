@@ -1,21 +1,45 @@
+from time import sleep
 import cv2
 
 tracker = cv2.TrackerKCF_create()
-video = cv2.VideoCapture(1)
+video = cv2.VideoCapture('test.mp4')
 
+
+def video_frame_rescaled(video : cv2.VideoCapture,
+                         width : int = 1280,
+                         height : int = 720) -> tuple:
+    ''' Returns next frame'''
+    success, frame = video.read()
+
+    if success:
+        frame = cv2.resize(frame, (width, height))
+
+    return success, frame
+
+
+# Read at least first frame to select ROI for experimient
+frame = None
 while True:
-    k,frame = video.read()
-    cv2.imshow("Tracking",frame)
+    sucess, frame = video_frame_rescaled(video)
+
+    cv2.imshow("Press esc to select frame for ROI select for tracking!",frame)
     k = cv2.waitKey(30) & 0xff
     if k == 27:
         break
-bbox = cv2.selectROI(frame, False)
+
+
+while True:
+    bbox = cv2.selectROI(frame, False)
+
+    if (bbox is not None) or (bbox != (0, 0, 0, 0)):
+        break
+
 
 ok = tracker.init(frame, bbox)
 cv2.destroyWindow("ROI selector")
 
 while True:
-    ok, frame = video.read()
+    ok, frame = video_frame_rescaled(video)
     ok, bbox = tracker.update(frame)
 
     if ok:

@@ -1,2 +1,7 @@
-# object_tracking
-Easy OpenCV Python Object Tracking Application using selectROI
+# Install
+
+Tested on python3.10
+
+```python
+pip install requirements.txt
+```
